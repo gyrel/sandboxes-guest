@@ -6,6 +6,7 @@
 
 - Remove the mandatory external release-review gate while retaining candidate validation, CI, and immutable release-tag protections.
 - Accept an `Unreleased` heading before the newest version during release validation.
+- Pin CI and release builds to Go 1.27.4.
 
 ## v0.0.3 — 2026-11-03
 
