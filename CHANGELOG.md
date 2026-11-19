@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.0.8 — 2026-11-19
+
+### Fixed
+
+- Remove stale links whose store entries disappeared on the next start. Agent
+  files and foreign links are left untouched, matching Docker's read-only
+  linking semantics.
+
+
 ## v0.0.7 — 2026-11-19
 
 ### Added

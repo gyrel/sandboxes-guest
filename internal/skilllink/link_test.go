@@ -114,3 +114,26 @@ func TestTargetMappingAndCancellation(t *testing.T) {
 		t.Fatalf("expected cancellation, got %v", err)
 	}
 }
+
+func TestLinkRemovesStaleStoreLinks(t *testing.T) {
+	home, store := t.TempDir(), t.TempDir()
+	if err := os.Mkdir(filepath.Join(store, "alpha"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Link(context.Background(), "codex", home, store); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(home, ".agents", "skills", "alpha")
+	if _, err := os.Lstat(link); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.RemoveAll(filepath.Join(store, "alpha")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Link(context.Background(), "codex", home, store); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Lstat(link); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("stale link survived: %v", err)
+	}
+}
