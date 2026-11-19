@@ -2,4 +2,4 @@
 package version
 
 // Version is the current build version. Release builds override it with -X.
-var Version = "0.0.7"
+var Version = "0.0.8"

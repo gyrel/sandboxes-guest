@@ -80,7 +80,15 @@ func Link(ctx context.Context, agent, home, store string) (Result, error) {
 		return Result{}, fmt.Errorf("open agent skills directory: %w", err)
 	}
 	defer func() { _ = destination.Close() }()
-	return linkEntries(ctx, destination, store, entries)
+	return linkStoreEntries(ctx, destination, store, entries)
+}
+
+func linkStoreEntries(ctx context.Context, destination *os.Root, store string, entries []os.DirEntry) (Result, error) {
+	result, err := linkEntries(ctx, destination, store, entries)
+	if err != nil {
+		return result, err
+	}
+	return result, removeStaleLinks(destination, store, entries)
 }
 
 func storeEntries(root *os.Root) ([]os.DirEntry, error) {
@@ -134,6 +142,53 @@ func addLink(root *os.Root, name, target string, result *Result) error {
 		result.Existing++
 	} else {
 		result.Conflicts++
+	}
+	return nil
+}
+
+// removeStaleLinks removes only links whose target is inside the store and
+// whose entry disappeared. Agent-owned files and foreign links are untouched.
+func removeStaleLinks(destination *os.Root, store string, entries []os.DirEntry) error {
+	current := make(map[string]bool, len(entries))
+	for _, entry := range entries {
+		current[entry.Name()] = true
+	}
+	existing, err := destination.Open(".")
+	if err != nil {
+		return fmt.Errorf("open agent skills directory: %w", err)
+	}
+	children, readErr := existing.ReadDir(maxEntries + 1)
+	closeErr := existing.Close()
+	if readErr != nil && !errors.Is(readErr, io.EOF) {
+		return fmt.Errorf("read agent skills directory: %w", readErr)
+	}
+	if closeErr != nil {
+		return fmt.Errorf("close agent skills directory: %w", closeErr)
+	}
+	if len(children) > maxEntries {
+		return errors.New("agent skills directory exceeds entry limit")
+	}
+	for _, child := range children {
+		if err := removeStaleLink(destination, store, child, current); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func removeStaleLink(destination *os.Root, store string, child os.DirEntry, current map[string]bool) error {
+	if current[child.Name()] || child.Type()&os.ModeSymlink == 0 {
+		return nil
+	}
+	target, err := destination.Readlink(child.Name())
+	if err != nil {
+		return nil //nolint:nilerr // An unreadable entry is not ours to remove.
+	}
+	if target != filepath.Join(store, child.Name()) {
+		return nil
+	}
+	if err := destination.Remove(child.Name()); err != nil {
+		return fmt.Errorf("remove stale skill link: %w", err)
 	}
 	return nil
 }
