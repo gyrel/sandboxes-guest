@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.0.7 — 2026-11-19
+
+### Added
+
+- Add the guest `link-skills` command and bounded linker for a read-only shared
+  skills store. Existing agent files are never overwritten; conflicting links
+  are counted and left untouched.
+- Resolve the current user's home inside the guest from the account database
+  instead of trusting a host path.
+- Map `kimi` and `dsh` to the shared `.agents/skills` directory.
+
+### Security
+
+- Reject unsafe store entries, symlinked store entries, clean-root paths and
+  unsupported agents. The linker itself does not mount or verify the store; the
+  runtime must provide a trusted read-only source.
+
+
 ## v0.0.6 — 2026-11-16
 
 ### Changed
