@@ -19,7 +19,7 @@ var skillName = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$`)
 // Target returns the agent-specific path relative to the agent's home.
 func Target(agent string) (string, bool) {
 	switch agent {
-	case "codex", "devin":
+	case "codex", "devin", "kimi", "dsh":
 		return ".agents/skills", true
 	case "claude":
 		return ".claude/skills", true

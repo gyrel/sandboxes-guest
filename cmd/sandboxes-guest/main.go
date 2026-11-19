@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/user"
 
 	"github.com/rheic/sandboxes-guest/internal/skilllink"
 	"github.com/rheic/sandboxes-guest/internal/version"
@@ -35,6 +36,14 @@ func run(ctx context.Context, args []string, out, errOut io.Writer) int {
 	if flags.NArg() != 0 {
 		_, _ = fmt.Fprintln(errOut, "unexpected arguments")
 		return 2
+	}
+	if *home == "" {
+		current, err := user.Current()
+		if err != nil || current.HomeDir == "" {
+			_, _ = fmt.Fprintln(errOut, "link skills: cannot resolve the current user's home")
+			return 1
+		}
+		*home = current.HomeDir
 	}
 	result, err := skilllink.Link(ctx, *agent, *home, *store)
 	if err != nil {

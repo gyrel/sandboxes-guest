@@ -96,7 +96,7 @@ func TestLinkDoesNotReplaceExistingSymlink(t *testing.T) {
 }
 
 func TestTargetMappingAndCancellation(t *testing.T) {
-	for agent, want := range map[string]string{"codex": ".agents/skills", "devin": ".agents/skills", "claude": ".claude/skills", "opencode": ".config/opencode/skills", "copilot": ".copilot/skills", "cursor": ".cursor/skills", "droid": ".factory/skills"} {
+	for agent, want := range map[string]string{"codex": ".agents/skills", "devin": ".agents/skills", "kimi": ".agents/skills", "dsh": ".agents/skills", "claude": ".claude/skills", "opencode": ".config/opencode/skills", "copilot": ".copilot/skills", "cursor": ".cursor/skills", "droid": ".factory/skills"} {
 		if got, ok := Target(agent); !ok || got != want {
 			t.Fatalf("%s: got %s %t", agent, got, ok)
 		}
