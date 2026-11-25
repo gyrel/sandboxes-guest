@@ -8,8 +8,8 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/rheic/sandboxes-guest/internal/skilllink"
-	"github.com/rheic/sandboxes-guest/internal/version"
+	"github.com/gyrel/sandboxes-guest/internal/skilllink"
+	"github.com/gyrel/sandboxes-guest/internal/version"
 )
 
 func main() {
