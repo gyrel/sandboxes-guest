@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Rename the Go module path from `github.com/rheic/sandboxes-guest` to
+  `github.com/gyrel/sandboxes-guest`. Breaking change; pre-1.0 alpha policy.
+
 ## v0.0.8 — 2026-11-19
 
 ### Fixed
